@@ -14,6 +14,46 @@ it useful.
 
 **What's there in this bundle?**
 
+* Conditions
+
+AssertJ is great framework for making test assertions, but it requires
+writing own conditions. These will allow to make long-chained assert
+on a single test subject.
+
+```java
+    assertThat(obj)
+        .isNotNull()
+        .has(nullIn(Obj::getNullField))
+        .has(empty(Obj::getCollectionField))
+        ...
+        .has(nonNullIn(Obj::getNonNullField))
+```
+
+* Unique value generation
+
+In order to remove dependency on magic numbers in test, we often use 
+just random values. But the problem is that we need test that are 
+generating same output no matter how many times we run them. So the real 
+goal for test value is to make it rather predictable and globally unique 
+for whole build than just randomize each time.
+
+```java
+    Long long1 = uniqueLong();
+    Long long2 = uniqueLong();
+    
+    assert long1 < long2;
+    
+    Short short1 = uniqueShort();
+    
+    assert short1 > 0;
+    
+    Date date1 = uniqueDate();
+    Date date2 = uniqueDate();
+    
+    assert date2.isAfter(date1);
+    assert date2.getTime() - date1.getTime() == 1000
+```
+
 **License**
 
 <a href="http://www.wtfpl.net/"><img
