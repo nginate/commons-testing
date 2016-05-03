@@ -13,7 +13,7 @@ import static com.google.common.collect.Iterables.isEmpty;
 /**
  * Conditions for assertJ to use with parent object without extracting actual field value that would break assertion
  * chain
- * <p>Example:<p/>
+ * <p>Example:</p>
  * <pre>
  *  {@code
  *     assertThat(obj.getField1()).isNotEmpty();
