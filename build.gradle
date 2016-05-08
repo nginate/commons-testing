@@ -10,14 +10,18 @@ buildscript {
 }
 
 plugins {
-    id 'nebula.optional-base' version '3.0.3'
+    id 'nebula.optional-base' version '3.1.0'
+    id "com.jfrog.bintray" version "1.6"
+    id 'net.researchgate.release' version '2.3.5'
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: "maven-publish"
 apply plugin: 'nebula.optional-base'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: "info.solidsoft.pitest"
+apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -39,6 +43,39 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+bintray {
+    user = findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    key = findProperty('bintrayApiKey') ?: System.getenv('BINTRAY_API_KEY')
+    publications = ['maven']
+    pkg {
+        repo = 'maven'
+        name = project.name
+        userOrg = 'nginate'
+        licenses = ['WTFPL']
+        vcsUrl = 'https://github.com/nginate/commons-testing.git'
+        version {
+            name = project.version
+            desc = "${project.name} $project.version"
+            released = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+            vcsTag = project.version
+        }
+    }
+}
+
+bintrayUpload.dependsOn ':generatePomFileForMavenPublication', ':assemble'
+check.dependsOn ':pitest'
 build.dependsOn install
 
 task sourceJar(type: Jar, dependsOn: classes) {
@@ -54,6 +91,16 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourceJar
     archives javadocJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {
