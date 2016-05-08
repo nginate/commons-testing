@@ -33,6 +33,7 @@ repositories {
 dependencies {
     // Utils
     compile 'com.google.guava:guava:19.0'
+    compile 'com.googlecode.gentyref:gentyref:1.2.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.assertj:assertj-core:3.4.1'
 
@@ -47,6 +48,11 @@ gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
+}
+
+pitest {
+    threads = 4
+    outputFormats = ['XML', 'HTML']
 }
 
 test {
