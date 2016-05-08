@@ -1,18 +1,56 @@
-**Overview**
+#### Overview
 
 These are helper classes for some of our favourite test frameworks and
 old good vanilla java as well. Use it as test dependency if you'll find 
 it useful.
 
-**Test frameworks dependencies**
+#### Test frameworks dependencies
 
 * [AssertJ](https://github.com/joel-costigliola/assertj-core)
 
-**Build status**
+#### Build status
 
 [![Build Status](https://travis-ci.org/nginate/commons-testing.svg?branch=master)](https://travis-ci.org/nginate/commons-testing)
 
-**What's there in this bundle?**
+#### Distribution
+
+##### Maven
+```maven
+    <repositories>
+       <repository>
+          <id>jcenter</id>
+          <url>http://jcenter.bintray.com</url>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </snapshots>
+          <releases>
+             <enabled>true</enabled>
+             <checksumPolicy>warn</checksumPolicy>
+          </releases>
+       </repository>
+    </repositories>
+    
+    <dependency>
+        <groupId>com.github.nginate</groupId>
+        <artifactId>commons-testing</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+```
+
+##### Gradle
+```gradle
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        compile 'com.github.nginate:commons-testing:1.0.0'
+    }
+```
+
+#### What's there in this bundle?
 
 * Conditions
 
@@ -54,7 +92,7 @@ for whole build than just randomize each time.
     assert date2.getTime() - date1.getTime() == 1000
 ```
 
-**License**
+#### License
 
 <a href="http://www.wtfpl.net/"><img
        src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
