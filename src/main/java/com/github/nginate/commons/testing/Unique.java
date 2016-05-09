@@ -10,12 +10,17 @@
 package com.github.nginate.commons.testing;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * In order to remove dependency on magic numbers in test, we often use just random values. But the problem is that we
@@ -30,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Unique {
     private static final long initMillis = System.currentTimeMillis();
     private static final AtomicLong idCounter = new AtomicLong();
+    private static final Iterator<Character> randomCharGenerator =
+            getCharsStream(Pair.of('a', 'z'), Pair.of('A', 'Z'), Pair.of('0', '9')).iterator();
 
     /**
      * Generate unique long. Uses plain output of atomic counter. Produces values greater than 0.
@@ -115,16 +122,13 @@ public class Unique {
     }
 
     /**
-     * Generate unique character as first char of string representation of unique long.
+     * Generate almost unique character from latin chars and digits.
      *
      * @return unique char
-     * @see Long#toString(long)
-     * @see Unique#uniqueLong()
      */
     @Nonnull
     public static Character uniqueCharacter() {
-        return Long.toString(uniqueLong())
-                .charAt(0);
+        return randomCharGenerator.next();
     }
 
     /**
@@ -193,5 +197,16 @@ public class Unique {
     @Nonnull
     public static BigDecimal uniqueBigDecimal() {
         return BigDecimal.valueOf(uniqueLong());
+    }
+
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    private static Stream<Character> getCharsStream(Pair<Character, Character>... fromToInclusivePairs) {
+        int[] validChars = Arrays.stream(fromToInclusivePairs)
+                .flatMapToInt(fromTo -> IntStream.rangeClosed(fromTo.getLeft(), fromTo.getRight()))
+                .toArray();
+        return IntStream.iterate(0, i -> i + 1)
+                .map(i -> validChars[i - validChars.length * (i / validChars.length)])
+                .mapToObj(charCode -> (char) charCode);
     }
 }
