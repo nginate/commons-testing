@@ -1,6 +1,7 @@
 package com.github.nginate.commons.testing;
 
 import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,19 +27,28 @@ import static java.util.stream.Collectors.toMap;
 public class Initializer<T> {
 
     public static <K, V> InitContext<? extends Map<K, V>> uniqueMap(Class<K> keyType, Class<V> valueType) {
-        return new InitContext<>(new TypeToken<Map<K, V>>() {});
+        TypeToken<Map<K, V>> typeToken = new TypeToken<Map<K, V>>() {}
+                .where(new TypeParameter<K>() {}, keyType)
+                .where(new TypeParameter<V>() {}, valueType);
+        return new InitContext<>(typeToken);
     }
 
     public static <T> InitContext<Set<T>> uniqueSet(Class<T> type) {
-        return new InitContext<>(new TypeToken<Set<T>>() {});
+        TypeToken<Set<T>> typeToken = new TypeToken<Set<T>>() {}
+                .where(new TypeParameter<T>() {}, type);
+        return new InitContext<>(typeToken);
     }
 
     public static <T> InitContext<Queue<T>> uniqueQueue(Class<T> type) {
-        return new InitContext<>(new TypeToken<Queue<T>>() {});
+        TypeToken<Queue<T>> typeToken = new TypeToken<Queue<T>>() {}
+                .where(new TypeParameter<T>() {}, type);
+        return new InitContext<>(typeToken);
     }
 
     public static <T> InitContext<List<T>> uniqueList(Class<T> type) {
-        return new InitContext<>(new TypeToken<List<T>>() {});
+        TypeToken<List<T>> typeToken = new TypeToken<List<T>>() {}
+                .where(new TypeParameter<T>() {}, type);
+        return new InitContext<>(typeToken);
     }
 
     public static <T> InitContext<T> uniqueObject(Class<T> type) {
@@ -72,7 +82,7 @@ public class Initializer<T> {
 
         if (type.getRawType().isInterface()) {
             context.contextType = context.mappingFor(type.getRawType());
-            return Initializer.generate(context);
+            return generate(context);
         }
 
         if (TypeToken.of(Integer.class).isSupertypeOf(type)) {
@@ -113,7 +123,7 @@ public class Initializer<T> {
         }
 
         if (type.getRawType().equals(Object.class)) {
-            return (T) uniqueCharacter();
+            return (T) uniqueLong();
         }
 
 
@@ -188,8 +198,8 @@ public class Initializer<T> {
                 .boxed()
                 .collect(
                         toMap(
-                                integer -> Initializer.generate(context.nested(TypeToken.of(erase(genericTypes[0])))),
-                                integer -> Initializer.generate(context.nested(TypeToken.of(erase(genericTypes[1]))))
+                                integer -> generate(context.nested(TypeToken.of(erase(genericTypes[0])))),
+                                integer -> generate(context.nested(TypeToken.of(erase(genericTypes[1]))))
                         )
                 );
     }
@@ -217,7 +227,7 @@ public class Initializer<T> {
 
     private Object[] generateConstructorParameters(Constructor<?> constructor) {
         return stream(constructor.getParameterTypes())
-                .map(aClass -> Initializer.generate(context.nested(TypeToken.of(aClass))))
+                .map(aClass -> generate(context.nested(TypeToken.of(aClass))))
                 .toArray(Object[]::new);
     }
 
@@ -240,6 +250,7 @@ public class Initializer<T> {
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(List.class, TypeToken.of(ArrayList.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(Set.class, TypeToken.of(HashSet.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(Map.class, TypeToken.of(HashMap.class));
+            DEFAULT_IMPLEMENTATION_MAPPINGS.put(Queue.class, TypeToken.of(LinkedList.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(CharSequence.class, TypeToken.of(String.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(Serializable.class, TypeToken.of(String.class));
         }
@@ -251,23 +262,23 @@ public class Initializer<T> {
         @Getter
         private int nestingDepth = DEFAULT_NESTING_DEPTH;
         @Getter
-        private Map<TypeToken<?>, Set<String>> excludedFields;
+        private final Map<TypeToken<?>, Set<String>> excludedFields;
         @Getter
-        private Map<Class<?>, TypeToken<?>> mappings;
+        private final Map<Class<?>, TypeToken<?>> mappings;
 
         InitContext(@NonNull TypeToken<T> contextType) {
             this.contextType = contextType;
-            this.excludedFields = Maps.newHashMap();
-            this.mappings = Maps.newHashMap(DEFAULT_IMPLEMENTATION_MAPPINGS);
+            excludedFields = Maps.newHashMap();
+            mappings = Maps.newHashMap(DEFAULT_IMPLEMENTATION_MAPPINGS);
         }
 
         public InitContext<T> withCollectionSize(int size) {
-            this.collectionSize = size;
+            collectionSize = size;
             return this;
         }
 
         public InitContext<T> withNestingDepth(int depth) {
-            this.nestingDepth = depth;
+            nestingDepth = depth;
             return this;
         }
 

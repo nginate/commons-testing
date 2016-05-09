@@ -1,13 +1,10 @@
 package com.github.nginate.commons.testing;
 
 import com.google.common.reflect.TypeToken;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -126,11 +123,34 @@ public class InitializerTest {
         List<Integer> list = Initializer.uniqueList(Integer.class)
                 .withCollectionSize(amount)
                 .generate();
+
         assertThat(list).isNotNull().hasSize(amount).doesNotContainNull();
+        list.forEach(v -> assertThat(v).isInstanceOf(Integer.class));
     }
 
     @Test
-    @Ignore
+    public void generateSetOfSimpleObjects() throws Exception {
+        int amount = 3;
+        Set<Integer> set = Initializer.uniqueSet(Integer.class)
+                .withCollectionSize(amount)
+                .generate();
+
+        assertThat(set).isNotNull().hasSize(amount).doesNotContainNull();
+        set.forEach(v -> assertThat(v).isInstanceOf(Integer.class));
+    }
+
+    @Test
+    public void generateQueueOfSimpleObjects() throws Exception {
+        int amount = 3;
+        Queue<Integer> queue = Initializer.uniqueQueue(Integer.class)
+                .withCollectionSize(amount)
+                .generate();
+
+        assertThat(queue).isNotNull().hasSize(amount).doesNotContainNull();
+        queue.forEach(v -> assertThat(v).isInstanceOf(Integer.class));
+    }
+
+    @Test
     public void generateMapOfSimpleObjects() throws Exception {
         int amount = 3;
 
@@ -138,6 +158,11 @@ public class InitializerTest {
         assertThat(map).isNotNull().hasSize(amount);
         assertThat(map.keySet()).doesNotContainNull();
         assertThat(map.values()).doesNotContainNull();
+
+        map.forEach((k, v) -> {
+            assertThat(k).isInstanceOf(Long.class);
+            assertThat(v).isInstanceOf(String.class);
+        });
     }
 
     @Test
@@ -163,5 +188,12 @@ public class InitializerTest {
         TypeToken<Map<Long, String>[]> token = new TypeToken<Map<Long, String>[]>() {};
         Map<Long, String>[] array = Initializer.uniqueObject(token).generate();
         assertThat(array).isNotEmpty();
+
+        for (Map<Long, String> map : array) {
+            map.forEach((k, v) -> {
+                assertThat(k).isInstanceOf(Long.class);
+                assertThat(v).isInstanceOf(String.class);
+            });
+        }
     }
 }
