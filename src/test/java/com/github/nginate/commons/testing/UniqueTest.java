@@ -2,9 +2,9 @@ package com.github.nginate.commons.testing;
 
 import org.junit.Test;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static com.github.nginate.commons.testing.Unique.*;
@@ -163,5 +163,21 @@ public class UniqueTest {
     @Test
     public void testUniqueBigDecimal() throws Exception {
         assertThat(uniqueBigDecimal()).isNotNull().isPositive();
+    }
+
+    @Test
+    public void testUniqueBigInteger() throws Exception {
+        assertThat(uniqueBigInteger()).isNotNull();
+    }
+
+    @Test
+    public void testUniqueUUID() throws Exception {
+        assertThat(uniqueUUID()).isNotNull();
+    }
+
+    @Test
+    public void testUniqueUUIDDoesNotRepeat() throws Exception {
+        UUID uuid = uniqueUUID();
+        assertThat(uniqueUUID()).isNotEqualTo(uuid);
     }
 }

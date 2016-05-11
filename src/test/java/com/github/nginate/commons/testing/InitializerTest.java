@@ -1,119 +1,125 @@
 package com.github.nginate.commons.testing;
 
+import com.github.nginate.commons.testing.dto.BinArrayDto;
+import com.github.nginate.commons.testing.dto.FileDto;
+import com.github.nginate.commons.testing.dto.MiscSimpleFieldsDto;
+import com.github.nginate.commons.testing.dto.NonDefaultConstructorDto;
 import com.google.common.reflect.TypeToken;
 import org.junit.Test;
 
 import java.io.Serializable;
 import java.util.*;
 
+import static com.github.nginate.commons.testing.Conditions.nonNullIn;
+import static com.github.nginate.commons.testing.Initializer.uniqueObject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InitializerTest {
     @Test
     public void generateSerializable() throws Exception {
-        Serializable serializable = Initializer.uniqueObject(Serializable.class).generate();
+        Serializable serializable = uniqueObject(Serializable.class).generate();
         assertThat(serializable).isNotNull();
     }
 
     @Test
     public void generateStringClass() throws Exception {
-        String string = Initializer.uniqueObject(String.class).generate();
+        String string = uniqueObject(String.class).generate();
         assertThat(string).isNotEmpty();
     }
 
     @Test
     public void generateCharSequenceInterface() throws Exception {
-        CharSequence charSequence = Initializer.uniqueObject(CharSequence.class).generate();
+        CharSequence charSequence = uniqueObject(CharSequence.class).generate();
         assertThat(charSequence).isNotEmpty();
     }
 
     @Test
     public void generateInteger() throws Exception {
-        Integer integer = Initializer.uniqueObject(Integer.class).generate();
+        Integer integer = uniqueObject(Integer.class).generate();
         assertThat(integer).isNotNull();
     }
 
     @Test
     public void generateInt() throws Exception {
-        int value = Initializer.uniqueObject(int.class).generate();
+        int value = uniqueObject(int.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateLongObject() throws Exception {
-        Long value = Initializer.uniqueObject(Long.class).generate();
+        Long value = uniqueObject(Long.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateLongPrimitive() throws Exception {
-        long value = Initializer.uniqueObject(long.class).generate();
+        long value = uniqueObject(long.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateShortObject() throws Exception {
-        Short value = Initializer.uniqueObject(Short.class).generate();
+        Short value = uniqueObject(Short.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateShortPrimitive() throws Exception {
-        short value = Initializer.uniqueObject(short.class).generate();
+        short value = uniqueObject(short.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateDoubleObject() throws Exception {
-        Double value = Initializer.uniqueObject(Double.class).generate();
+        Double value = uniqueObject(Double.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateDoublePrimitive() throws Exception {
-        double value = Initializer.uniqueObject(double.class).generate();
+        double value = uniqueObject(double.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateFloatObject() throws Exception {
-        Float value = Initializer.uniqueObject(Float.class).generate();
+        Float value = uniqueObject(Float.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateFloatPrimitive() throws Exception {
-        float value = Initializer.uniqueObject(float.class).generate();
+        float value = uniqueObject(float.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateByteObject() throws Exception {
-        Byte value = Initializer.uniqueObject(Byte.class).generate();
+        Byte value = uniqueObject(Byte.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateBytePrimitive() throws Exception {
-        byte value = Initializer.uniqueObject(byte.class).generate();
+        byte value = uniqueObject(byte.class).generate();
         assertThat(value).isNotZero();
     }
 
     @Test
     public void generateCharacterObject() throws Exception {
-        Character value = Initializer.uniqueObject(Character.class).generate();
+        Character value = uniqueObject(Character.class).generate();
         assertThat(value).isNotNull();
     }
 
     @Test
     public void generateCharPrimitive() throws Exception {
-        char value = Initializer.uniqueObject(char.class).generate();
+        char value = uniqueObject(char.class).generate();
         assertThat(value).inUnicode();
     }
 
     @Test
     public void generateDate() throws Exception {
-        Date date = Initializer.uniqueObject(Date.class).generate();
+        Date date = uniqueObject(Date.class).generate();
         assertThat(date).isNotNull();
     }
 
@@ -167,26 +173,27 @@ public class InitializerTest {
 
     @Test
     public void generatePrimitiveArray() throws Exception {
-        byte[] array = Initializer.uniqueObject(byte[].class).generate();
+        byte[] array = uniqueObject(byte[].class).generate();
         assertThat(array).isNotEmpty();
     }
 
     @Test
     public void generateSimpleObjectArray() throws Exception {
-        Short[] array = Initializer.uniqueObject(Short[].class).generate();
+        Short[] array = uniqueObject(Short[].class).generate();
         assertThat(array).isNotEmpty();
     }
 
     @Test
     public void generateSimpleInterfaceArray() throws Exception {
-        Serializable[] array = Initializer.uniqueObject(Serializable[].class).generate();
+        Serializable[] array = uniqueObject(Serializable[].class).generate();
         assertThat(array).isNotEmpty();
     }
 
     @Test
     public void generateArrayOfParametrized() throws Exception {
-        TypeToken<Map<Long, String>[]> token = new TypeToken<Map<Long, String>[]>() {};
-        Map<Long, String>[] array = Initializer.uniqueObject(token).generate();
+        TypeToken<Map<Long, String>[]> token = new TypeToken<Map<Long, String>[]>() {
+        };
+        Map<Long, String>[] array = uniqueObject(token).generate();
         assertThat(array).isNotEmpty();
 
         for (Map<Long, String> map : array) {
@@ -195,5 +202,44 @@ public class InitializerTest {
                 assertThat(v).isInstanceOf(String.class);
             });
         }
+    }
+
+    @Test
+    public void testBinArrayField() throws Exception {
+        BinArrayDto dto = uniqueObject(BinArrayDto.class).generate();
+        assertThat(dto).isNotNull();
+        assertThat(dto.getBinArray()).isNotNull().isNotEmpty().doesNotHaveDuplicates();
+    }
+
+    @Test
+    public void testObjectWithMiscSimpleObjectFields() throws Exception {
+        MiscSimpleFieldsDto dto = uniqueObject(MiscSimpleFieldsDto.class).generate();
+
+        assertThat(dto).isNotNull()
+                .has(nonNullIn(MiscSimpleFieldsDto::getBigDecimalField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getBigIntegerField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getByteField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getCharacterField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getDateField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getDoubleField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getFloatField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getInstantField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getIntegerField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getLongField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getShortField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getUuidField))
+                .has(nonNullIn(MiscSimpleFieldsDto::getStringField));
+    }
+
+    @Test
+    public void testFileDto() throws Exception {
+        FileDto fileDto = uniqueObject(FileDto.class).generate();
+        assertThat(fileDto).isNotNull();
+    }
+
+    @Test
+    public void testNonDefaultConstructor() throws Exception {
+        NonDefaultConstructorDto dto = uniqueObject(NonDefaultConstructorDto.class).generate();
+        assertThat(dto).isNotNull().has(nonNullIn(NonDefaultConstructorDto::getString));
     }
 }

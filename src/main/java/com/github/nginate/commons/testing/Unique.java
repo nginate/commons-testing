@@ -2,7 +2,7 @@
  * Copyright © 2016
  * Maksim Lozbin <maksmtua@gmail.com>
  * Oleksii Ihnachuk <legioner.alexei@gmail.com>
- *
+ * <p>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
@@ -14,13 +14,17 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.overlay;
 
 /**
  * In order to remove dependency on magic numbers in test, we often use just random values. But the problem is that we
@@ -37,6 +41,7 @@ public class Unique {
     private static final AtomicLong idCounter = new AtomicLong();
     private static final Iterator<Character> randomCharGenerator =
             getCharsStream(Pair.of('a', 'z'), Pair.of('A', 'Z'), Pair.of('0', '9')).iterator();
+    private static final String UUID_TEMPLATE = "00000000000000000000000000000000";
 
     /**
      * Generate unique long. Uses plain output of atomic counter. Produces values greater than 0.
@@ -65,7 +70,7 @@ public class Unique {
         // adding dot for fractional view
         fractionalBuilder.insert(0, ".");
         // append non zero ending for fractional part
-        if (stringValue.endsWith("0")){
+        if (stringValue.endsWith("0")) {
             fractionalBuilder.append("1");
         }
         fractionalBuilder.insert(0, value);
@@ -197,6 +202,33 @@ public class Unique {
     @Nonnull
     public static BigDecimal uniqueBigDecimal() {
         return BigDecimal.valueOf(uniqueLong());
+    }
+
+    /**
+     * Generate unique big integer from unique long
+     *
+     * @return unique big integer
+     * @see BigInteger#valueOf(long)
+     */
+    @Nonnull
+    public static BigInteger uniqueBigInteger() {
+        return BigInteger.valueOf(uniqueLong());
+    }
+
+    /**
+     * Generate unique UUID
+     * @return unique UUID
+     */
+    @Nonnull
+    public static UUID uniqueUUID() {
+        String seed = uniqueLong().toString();
+        String uuid = overlay(UUID_TEMPLATE, seed, UUID_TEMPLATE.length() - seed.length(), UUID_TEMPLATE.length());
+        return UUID.fromString(new StringBuilder(uuid)
+                .insert(8, '-')
+                .insert(13, '-')
+                .insert(18, '-')
+                .insert(23, '-')
+                .toString());
     }
 
     @SafeVarargs

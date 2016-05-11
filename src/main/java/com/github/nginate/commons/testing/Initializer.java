@@ -10,6 +10,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.lang.reflect.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -114,12 +117,28 @@ public class Initializer<T> {
             return (T) uniqueDate();
         }
 
+        if (TypeToken.of(Instant.class).isSupertypeOf(type)) {
+            return (T) uniqueInstant();
+        }
+
         if (TypeToken.of(Float.class).isSupertypeOf(type)) {
             return (T) uniqueFloat();
         }
 
         if (TypeToken.of(Byte.class).isSupertypeOf(type)) {
             return (T) uniqueByte();
+        }
+
+        if (TypeToken.of(BigDecimal.class).isSupertypeOf(type)) {
+            return (T) uniqueBigDecimal();
+        }
+
+        if (TypeToken.of(BigInteger.class).isSupertypeOf(type)) {
+            return (T) uniqueBigInteger();
+        }
+
+        if (TypeToken.of(UUID.class).isSupertypeOf(type)) {
+            return (T) uniqueUUID();
         }
 
         if (type.getRawType().equals(Object.class)) {
@@ -144,7 +163,7 @@ public class Initializer<T> {
                     if (typeClass.isPrimitive()) {
                         setField(instance, field);
                     } else if (typeClass.isArray()) {
-                        Object[] array = (Object[]) generateArray(typeClass, context.getCollectionSize(),
+                        Object array = generateArray(typeClass, context.getCollectionSize(),
                                 token -> generate(context.nested(token)));
                         setArrayField(instance, field, array);
                     } else {
@@ -282,7 +301,7 @@ public class Initializer<T> {
             return this;
         }
 
-        public InitContext<T> excludeFieldFor(@Nonnull @NonNull Class<?> clazz,
+        public InitContext<T> withExcludedFieldsFor(@Nonnull @NonNull Class<?> clazz,
                 @Nonnull @NonNull String... fieldNames) {
             TypeToken<?> typeToken = TypeToken.of(clazz);
             excludedFields.putIfAbsent(typeToken, new HashSet<>());
@@ -336,7 +355,7 @@ public class Initializer<T> {
             return new Initializer<>(this).create();
         }
 
-        public <N> InitContext<N> nested(TypeToken<N> nestedToken) {
+        <N> InitContext<N> nested(TypeToken<N> nestedToken) {
             return new InitContext<>(nestedToken)
                     .withCollectionSize(collectionSize)
                     .withNestingDepth(nestingDepth--)

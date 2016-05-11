@@ -79,7 +79,7 @@ public class NArrays {
      * @see Field#setAccessible(boolean)
      * @see Field#set(Object, Object)
      */
-    public static void setArrayField(Object instance, Field field, Object[] array) {
+    public static void setArrayField(Object instance, Field field, Object array) {
         try {
             field.setAccessible(true);
             field.set(instance, array);
