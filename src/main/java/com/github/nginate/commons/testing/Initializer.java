@@ -22,6 +22,7 @@ import static com.github.nginate.commons.testing.NPrimitives.setField;
 import static com.github.nginate.commons.testing.Unique.*;
 import static com.googlecode.gentyref.GenericTypeReflector.erase;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactFieldType;
+import static java.lang.reflect.Modifier.isAbstract;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.lang.reflect.Modifier.isTransient;
 import static java.util.Arrays.stream;
@@ -75,17 +76,13 @@ public class Initializer<T> {
     @SuppressWarnings("unchecked")
     private T create() {
         TypeToken<T> type = context.getContextType();
-        if (type.isArray()) {
-            return (T) generateArray(type, context.getCollectionSize(), token -> generate(context.nested(token)));
+
+        if (type.isPrimitive()) {
+            return NPrimitives.createUnique((Class<T>) type.getRawType());
         }
 
-        if (type.getType() instanceof ParameterizedType) {
-            return generateParametrizedObjectValue(type);
-        }
-
-        if (type.getRawType().isInterface()) {
-            context.contextType = context.mappingFor(type.getRawType());
-            return generate(context);
+        if (TypeToken.of(Short.class).isSupertypeOf(type)) {
+            return (T) uniqueShort();
         }
 
         if (TypeToken.of(Integer.class).isSupertypeOf(type)) {
@@ -104,21 +101,12 @@ public class Initializer<T> {
             return (T) uniqueString();
         }
 
-        if (type.getRawType().isEnum()) {
-            T[] constants = (T[]) type.getRawType().getEnumConstants();
-            return constants[0];
+        if (TypeToken.of(Character.class).isSupertypeOf(type)) {
+            return (T) uniqueCharacter();
         }
 
         if (TypeToken.of(Boolean.class).isSupertypeOf(type)) {
             return (T) uniqueBoolean();
-        }
-
-        if (TypeToken.of(Date.class).isSupertypeOf(type)) {
-            return (T) uniqueDate();
-        }
-
-        if (TypeToken.of(Instant.class).isSupertypeOf(type)) {
-            return (T) uniqueInstant();
         }
 
         if (TypeToken.of(Float.class).isSupertypeOf(type)) {
@@ -127,6 +115,23 @@ public class Initializer<T> {
 
         if (TypeToken.of(Byte.class).isSupertypeOf(type)) {
             return (T) uniqueByte();
+        }
+
+        if (context.getNestingDepth() < 0) {
+            return null;
+        }
+
+        if (type.getRawType().isEnum()) {
+            T[] constants = (T[]) type.getRawType().getEnumConstants();
+            return constants[0];
+        }
+
+        if (TypeToken.of(Date.class).isSupertypeOf(type)) {
+            return (T) uniqueDate();
+        }
+
+        if (TypeToken.of(Instant.class).isSupertypeOf(type)) {
+            return (T) uniqueInstant();
         }
 
         if (TypeToken.of(BigDecimal.class).isSupertypeOf(type)) {
@@ -141,10 +146,22 @@ public class Initializer<T> {
             return (T) uniqueUUID();
         }
 
+        if (type.isArray()) {
+            return (T) generateArray(type, context.getCollectionSize(), token -> generate(context.nested(token)));
+        }
+
+        if (type.getType() instanceof ParameterizedType) {
+            return generateParametrizedObjectValue(type);
+        }
+
+        if (type.getRawType().isInterface() || isAbstract(type.getRawType().getModifiers())) {
+            context.contextType = context.mappingFor(type.getRawType());
+            return generate(context);
+        }
+
         if (type.getRawType().equals(Object.class)) {
             return (T) uniqueLong();
         }
-
 
         T instance = (T) instantiateClass(type.getRawType());
         fillObjectFields(instance);
@@ -225,10 +242,7 @@ public class Initializer<T> {
 
     private <C> C instantiateClass(Class<C> clazz) {
         try {
-            if (clazz.isPrimitive()) {
-                return NPrimitives.createUnique(clazz);
-            }
-            if (clazz.isInterface()) {
+            if (clazz.isInterface() || isAbstract(clazz.getModifiers())) {
                 return (C) instantiateClass(context.mappingFor(clazz).getRawType());
             }
             if (hasDefaultConstructor(clazz)) {
@@ -272,6 +286,7 @@ public class Initializer<T> {
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(Queue.class, TypeToken.of(LinkedList.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(CharSequence.class, TypeToken.of(String.class));
             DEFAULT_IMPLEMENTATION_MAPPINGS.put(Serializable.class, TypeToken.of(String.class));
+            DEFAULT_IMPLEMENTATION_MAPPINGS.put(Number.class, TypeToken.of(Long.class));
         }
 
         @Getter
@@ -316,7 +331,7 @@ public class Initializer<T> {
 
         public InitContext<T> withMapping(@Nonnull @NonNull Class<?> interfaceClass,
                 @Nonnull @NonNull Class<?> implClass) {
-            if (!interfaceClass.isInterface()) {
+            if (!interfaceClass.isInterface() && !isAbstract(interfaceClass.getModifiers())) {
                 throw new ObjectInitializationException("Provided key is not interface : " + interfaceClass);
             }
             if (implClass.isInterface() || implClass.isPrimitive()) {
@@ -328,8 +343,8 @@ public class Initializer<T> {
 
         public InitContext<T> withMappings(@Nonnull @NonNull Map<Class<?>, TypeToken<?>> mappings) {
             mappings.entrySet().stream().forEach(entry -> {
-                if (!entry.getKey().isInterface()) {
-                    throw new ObjectInitializationException("Provided key is not interface : " + entry.getKey());
+                if (!entry.getKey().isInterface() && !isAbstract(entry.getKey().getModifiers())) {
+                    throw new ObjectInitializationException("Provided key is not interface/abstract:" + entry.getKey());
                 }
                 if (entry.getValue().getRawType().isInterface() || entry.getValue().isPrimitive()) {
                     throw new ObjectInitializationException("Cannot use as implementation for interface : " +
@@ -358,7 +373,7 @@ public class Initializer<T> {
         <N> InitContext<N> nested(TypeToken<N> nestedToken) {
             return new InitContext<>(nestedToken)
                     .withCollectionSize(collectionSize)
-                    .withNestingDepth(nestingDepth--)
+                    .withNestingDepth(nestingDepth-1)
                     .withMappings(mappings)
                     .withExcludedFields(excludedFields);
         }

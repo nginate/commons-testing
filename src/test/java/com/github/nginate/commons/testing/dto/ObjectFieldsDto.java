@@ -9,10 +9,11 @@ import java.util.Date;
 import java.util.UUID;
 
 @Data
-public class MiscSimpleFieldsDto {
+public class ObjectFieldsDto {
     private String stringField;
     private Character characterField;
     private Byte byteField;
+    private Boolean booleanField;
     private Short shortField;
     private Integer integerField;
     private Double doubleField;

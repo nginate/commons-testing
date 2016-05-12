@@ -97,13 +97,31 @@ public class Conditions {
      * @param fieldExtractor pointer to an object field
      * @param <T>            object type
      * @param <F>            field type
-     * @return true if provided value is not not and is equal to object's field value
+     * @return true if provided value is not null and is equal to object's field value
      */
     public static <T, F> Condition<T> equalTo(F expected, Function<T, F> fieldExtractor) {
         return new Condition<T>() {
             @Override
             public boolean matches(T value) {
                 return value != null && Objects.equals(fieldExtractor.apply(value), expected);
+            }
+        };
+    }
+
+    /**
+     * Expect object's field to be not equal to a provided value
+     *
+     * @param expected       not expected value
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @param <F>            field type
+     * @return true if provided value is not null and is not equal to object's field value
+     */
+    public static <T, F> Condition<T> notEqualTo(F expected, Function<T, F> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                return value != null && !Objects.equals(fieldExtractor.apply(value), expected);
             }
         };
     }
@@ -160,6 +178,169 @@ public class Conditions {
             public boolean matches(T value) {
                 Collection<F> collection = fieldExtractor.apply(value);
                 return collection != null && collection.size() == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @param <A>            array type
+     * @return true if array is not null and has expected size
+     */
+    public static <T, A> Condition<T> arraySize(int size, Function<T, A[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                A[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> byteArraySize(int size, Function<T, byte[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                byte[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> booleanArraySize(int size, Function<T, boolean[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                boolean[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> charArraySize(int size, Function<T, char[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                char[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> doubleArraySize(int size, Function<T, double[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                double[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> floatArraySize(int size, Function<T, float[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                float[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> intArraySize(int size, Function<T, int[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                int[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> longArraySize(int size, Function<T, long[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                long[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
+            }
+        };
+    }
+
+    /**
+     * Expect object to have array of a given size
+     *
+     * @param size           expected size
+     * @param fieldExtractor pointer to an object field
+     * @param <T>            object type
+     * @return true if array is not null and has expected size
+     */
+    public static <T> Condition<T> shortArraySize(int size, Function<T, short[]> fieldExtractor) {
+        return new Condition<T>() {
+            @Override
+            public boolean matches(T value) {
+                short[] array = fieldExtractor.apply(value);
+                return array != null && array.length == size;
             }
         };
     }

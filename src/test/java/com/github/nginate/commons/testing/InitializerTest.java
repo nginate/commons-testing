@@ -1,16 +1,15 @@
 package com.github.nginate.commons.testing;
 
-import com.github.nginate.commons.testing.dto.BinArrayDto;
-import com.github.nginate.commons.testing.dto.FileDto;
-import com.github.nginate.commons.testing.dto.MiscSimpleFieldsDto;
-import com.github.nginate.commons.testing.dto.NonDefaultConstructorDto;
+import com.github.nginate.commons.testing.dto.*;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
+import org.assertj.core.util.Maps;
 import org.junit.Test;
 
 import java.io.Serializable;
 import java.util.*;
 
-import static com.github.nginate.commons.testing.Conditions.nonNullIn;
+import static com.github.nginate.commons.testing.Conditions.*;
 import static com.github.nginate.commons.testing.Initializer.uniqueObject;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -213,22 +212,75 @@ public class InitializerTest {
 
     @Test
     public void testObjectWithMiscSimpleObjectFields() throws Exception {
-        MiscSimpleFieldsDto dto = uniqueObject(MiscSimpleFieldsDto.class).generate();
+        ObjectFieldsDto dto = uniqueObject(ObjectFieldsDto.class).generate();
 
         assertThat(dto).isNotNull()
-                .has(nonNullIn(MiscSimpleFieldsDto::getBigDecimalField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getBigIntegerField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getByteField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getCharacterField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getDateField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getDoubleField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getFloatField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getInstantField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getIntegerField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getLongField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getShortField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getUuidField))
-                .has(nonNullIn(MiscSimpleFieldsDto::getStringField));
+                .has(nonNullIn(ObjectFieldsDto::getBigDecimalField))
+                .has(nonNullIn(ObjectFieldsDto::getBigIntegerField))
+                .has(nonNullIn(ObjectFieldsDto::getByteField))
+                .has(nonNullIn(ObjectFieldsDto::getBooleanField))
+                .has(nonNullIn(ObjectFieldsDto::getCharacterField))
+                .has(nonNullIn(ObjectFieldsDto::getDateField))
+                .has(nonNullIn(ObjectFieldsDto::getDoubleField))
+                .has(nonNullIn(ObjectFieldsDto::getFloatField))
+                .has(nonNullIn(ObjectFieldsDto::getInstantField))
+                .has(nonNullIn(ObjectFieldsDto::getIntegerField))
+                .has(nonNullIn(ObjectFieldsDto::getLongField))
+                .has(nonNullIn(ObjectFieldsDto::getShortField))
+                .has(nonNullIn(ObjectFieldsDto::getUuidField))
+                .has(nonNullIn(ObjectFieldsDto::getStringField));
+    }
+
+    @Test
+    public void testObjectWithMiscSimpleObjectArrayFields() throws Exception {
+        int amount = 5;
+        ObjectArraysFieldsDto dto = uniqueObject(ObjectArraysFieldsDto.class).withCollectionSize(amount).generate();
+
+        assertThat(dto).isNotNull()
+                .has(arraySize(amount, ObjectArraysFieldsDto::getBigDecimalField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getBigIntegerField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getByteField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getBooleanField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getCharacterField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getDateField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getDoubleField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getFloatField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getInstantField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getIntegerField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getLongField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getShortField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getUuidField))
+                .has(arraySize(amount,ObjectArraysFieldsDto::getStringField));
+    }
+
+    @Test
+    public void testObjectWithSimplePrimitiveFields() throws Exception {
+        PrimitiveFieldsDto dto = uniqueObject(PrimitiveFieldsDto.class).generate();
+
+        assertThat(dto).isNotNull()
+                .has(notEqualTo(0, PrimitiveFieldsDto::getByteField))
+                .has(notEqualTo('\u0000', PrimitiveFieldsDto::getCharacterField))
+                .has(notEqualTo(0, PrimitiveFieldsDto::getDoubleField))
+                .has(notEqualTo(0, PrimitiveFieldsDto::getFloatField))
+                .has(notEqualTo(0, PrimitiveFieldsDto::getIntegerField))
+                .has(notEqualTo(0, PrimitiveFieldsDto::getLongField))
+                .has(notEqualTo(0, PrimitiveFieldsDto::getShortField));
+    }
+
+    @Test
+    public void testObjectWithMiscPrimitiveArrayFields() throws Exception {
+        int amount = 5;
+        PrimitiveArrayFieldsDto dto = uniqueObject(PrimitiveArrayFieldsDto.class).withCollectionSize(amount).generate();
+
+        assertThat(dto).isNotNull()
+                .has(byteArraySize(amount, PrimitiveArrayFieldsDto::getByteField))
+                .has(booleanArraySize(amount, PrimitiveArrayFieldsDto::getBooleanField))
+                .has(charArraySize(amount, PrimitiveArrayFieldsDto::getCharacterField))
+                .has(doubleArraySize(amount, PrimitiveArrayFieldsDto::getDoubleField))
+                .has(floatArraySize(amount, PrimitiveArrayFieldsDto::getFloatField))
+                .has(intArraySize(amount, PrimitiveArrayFieldsDto::getIntegerField))
+                .has(longArraySize(amount, PrimitiveArrayFieldsDto::getLongField))
+                .has(shortArraySize(amount, PrimitiveArrayFieldsDto::getShortField));
     }
 
     @Test
@@ -238,8 +290,64 @@ public class InitializerTest {
     }
 
     @Test
+    public void testFileArrayDto() throws Exception {
+        int amount = 5;
+        FileArrayDto fileDto = uniqueObject(FileArrayDto.class).withCollectionSize(amount).generate();
+        assertThat(fileDto).isNotNull().has(arraySize(amount, FileArrayDto::getFileField));
+    }
+
+    @Test
     public void testNonDefaultConstructor() throws Exception {
         NonDefaultConstructorDto dto = uniqueObject(NonDefaultConstructorDto.class).generate();
         assertThat(dto).isNotNull().has(nonNullIn(NonDefaultConstructorDto::getString));
+    }
+
+    @Test
+    public void testSimpleObjectField() throws Exception {
+        SimpleObjectFieldDto dto = uniqueObject(SimpleObjectFieldDto.class).generate();
+        assertThat(dto).isNotNull().has(nonNullIn(SimpleObjectFieldDto::getObject));
+    }
+
+    @Test
+    public void testSimpleObjectArrayField() throws Exception {
+        int amount = 5;
+        SimpleObjectArrayFieldDto dto = uniqueObject(SimpleObjectArrayFieldDto.class).withCollectionSize(amount)
+                .generate();
+        assertThat(dto).isNotNull().has(arraySize(amount, SimpleObjectArrayFieldDto::getObject));
+    }
+
+    @Test
+    public void testFieldsExclusion() throws Exception {
+        FileDto dto = uniqueObject(FileDto.class)
+                .withExcludedFields(Maps.newHashMap(TypeToken.of(FileDto.class), Sets.newHashSet("fileField")))
+                .generate();
+        assertThat(dto).isNotNull().has(nullIn(FileDto::getFileField));
+    }
+
+    @Test
+    public void testFieldExclusion() throws Exception {
+        FileDto dto = uniqueObject(FileDto.class)
+                .withExcludedFieldsFor(FileDto.class, "fileField")
+                .generate();
+        assertThat(dto).isNotNull().has(nullIn(FileDto::getFileField));
+    }
+
+    @Test
+    public void testNumberField() throws Exception {
+        NumberFieldDto dto = uniqueObject(NumberFieldDto.class).generate();
+        assertThat(dto).isNotNull().has(positive(NumberFieldDto::getNumber));
+    }
+
+    @Test
+    public void testCustomNumberFieldMapping() throws Exception {
+        NumberFieldDto dto = uniqueObject(NumberFieldDto.class).withMapping(Number.class, Integer.class).generate();
+        assertThat(dto).isNotNull().has(positive(NumberFieldDto::getNumber));
+        assertThat(dto.getNumber()).isExactlyInstanceOf(Integer.class);
+    }
+
+    @Test
+    public void testRecursiveGeneration() throws Exception {
+        RecursiveDto dto = uniqueObject(RecursiveDto.class).generate();
+        assertThat(dto).isNotNull().has(nonNullIn(RecursiveDto::getRecursiveDto));
     }
 }
