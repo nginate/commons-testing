@@ -52,7 +52,9 @@ gradle.projectsEvaluated {
 
 pitest {
     threads = 4
-    outputFormats = ['XML', 'HTML']
+    outputFormats = ['HTML']
+    mutateStaticInits = true
+    timestampedReports = false
 }
 
 test {

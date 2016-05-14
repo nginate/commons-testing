@@ -10,7 +10,7 @@ it useful.
 
 #### Build status
 
-[![Build Status](https://travis-ci.org/nginate/commons-testing.svg?branch=master)](https://travis-ci.org/nginate/commons-testing)
+[![][travis img]][travis] [![][jcenterbadge img]][jcenterbadge] [![][codecovbadge img]][codecovbadge] [![][dependencies img]][dependencies]
 
 #### Distribution
 
@@ -97,3 +97,15 @@ for whole build than just randomize each time.
 <a href="http://www.wtfpl.net/"><img
        src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
        width="80" height="15" alt="WTFPL" /></a>
+       
+[travis]:https://travis-ci.org/nginate/commons-testing
+[travis img]:https://travis-ci.org/nginate/commons-testing.svg?branch=master
+
+[jcenterbadge]:https://bintray.com/nginate/maven/commons-testing/_latestVersion
+[jcenterbadge img]:https://api.bintray.com/packages/nginate/maven/commons-testing/images/download.svg
+
+[codecovbadge]:https://codecov.io/gh/nginate/commons-testing
+[codecovbadge img]:https://codecov.io/gh/nginate/commons-testing/branch/master/graph/badge.svg
+
+[dependencies]:https://www.versioneye.com/user/projects/57372032a0ca35004baf950b
+[dependencies img]:https://www.versioneye.com/user/projects/57372032a0ca35004baf950b/badge.svg?style=flat
