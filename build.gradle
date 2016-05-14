@@ -17,6 +17,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: "jacoco"
 apply plugin: "maven-publish"
 apply plugin: 'nebula.optional-base'
 apply plugin: 'com.github.ben-manes.versions'
@@ -55,6 +56,15 @@ pitest {
     outputFormats = ['HTML']
     mutateStaticInits = true
     timestampedReports = false
+}
+
+jacocoTestReport {
+    group = "report"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled false
+    }
 }
 
 test {
