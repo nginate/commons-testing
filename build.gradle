@@ -4,15 +4,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
     }
 }
 
 plugins {
     id 'nebula.optional-base' version '3.1.0'
-    id "com.jfrog.bintray" version "1.6"
-    id 'net.researchgate.release' version '2.3.5'
+    id "com.jfrog.bintray" version "1.7.1"
+    id 'net.researchgate.release' version '2.4.0'
 }
 
 apply plugin: 'java'
@@ -36,7 +36,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'com.googlecode.gentyref:gentyref:1.2.0'
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.assertj:assertj-core:3.4.1'
+    compile 'org.assertj:assertj-core:3.5.1'
 
     // Annotation processors
     compile 'org.projectlombok:lombok:1.16.8', optional
