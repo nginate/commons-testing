@@ -33,13 +33,13 @@ repositories {
 
 dependencies {
     // Utils
-    compile 'com.google.guava:guava:19.0'
+    compile 'com.google.guava:guava:21.0'
     compile 'com.googlecode.gentyref:gentyref:1.2.0'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.assertj:assertj-core:3.5.1'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'org.assertj:assertj-core:3.6.1'
 
     // Annotation processors
-    compile 'org.projectlombok:lombok:1.16.8', optional
+    compile 'org.projectlombok:lombok:1.16.12', optional
     compile 'com.google.code.findbugs:jsr305:3.0.1', optional
 
     testCompile 'junit:junit:4.12'
@@ -121,5 +121,5 @@ publishing {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
+    gradleVersion = '3.3'
 }
